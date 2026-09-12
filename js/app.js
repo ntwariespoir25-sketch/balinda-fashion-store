@@ -15,6 +15,7 @@
   let activeFilter = "all";
   let searchTerm = "";
   let sortBy = "featured";
+  let wishlistOnly = false;
 
   /* ---------- Elements ---------- */
   const productsGrid = $("#productsGrid");
@@ -25,6 +26,7 @@
   const cartSummary = $("#cartSummary");
   const cartCount = $("#cartCount");
   const cartHeaderCount = $("#cartHeaderCount");
+  const wishCount = $("#wishCount");
   const toast = $("#toast");
 
   /* ---------- Cart persistence ---------- */
@@ -60,7 +62,8 @@
       const matchesSearch =
         !searchTerm ||
         `${p.name} ${p.category} ${p.description}`.toLowerCase().includes(searchTerm);
-      return matchesCat && matchesSearch;
+      const matchesWish = !wishlistOnly || wishlist.includes(p.id);
+      return matchesCat && matchesSearch && matchesWish;
     });
 
     switch (sortBy) {
@@ -152,6 +155,18 @@
     const bar = $("#searchBar");
     bar.classList.toggle("open");
     if (bar.classList.contains("open")) $("#searchInput").focus();
+  });
+
+  $("#wishToggle").addEventListener("click", () => {
+    if (wishlist.length === 0) {
+      showToast("Tap the ♥ on any piece to save it");
+      return;
+    }
+    wishlistOnly = !wishlistOnly;
+    setFilter("all");
+    updateWishlistUI();
+    document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
+    showToast(wishlistOnly ? "Showing wishlist" : "Showing all products");
   });
 
   // Category shortcuts (home + footer)
@@ -446,6 +461,11 @@
     } catch {
       /* storage unavailable */
     }
+    updateWishlistUI();
+  }
+  function updateWishlistUI() {
+    wishCount.textContent = wishlist.length;
+    wishCount.classList.toggle("show", wishlist.length > 0);
   }
   function toggleWishlist(id) {
     const product = PRODUCTS.find((p) => p.id === Number(id));
@@ -512,4 +532,5 @@
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();
+  updateWishlistUI();
 })();
