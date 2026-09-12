@@ -85,6 +85,13 @@
       case "price-desc":
         list.sort((a, b) => b.price - a.price);
         break;
+      case "discount":
+        list.sort((a, b) => {
+          const da = a.oldPrice ? (a.oldPrice - a.price) / a.oldPrice : 0;
+          const db = b.oldPrice ? (b.oldPrice - b.price) / b.oldPrice : 0;
+          return db - da;
+        });
+        break;
       case "name":
         list.sort((a, b) => a.name.localeCompare(b.name));
         break;
