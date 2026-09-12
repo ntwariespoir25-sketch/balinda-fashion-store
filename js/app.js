@@ -348,6 +348,19 @@
     );
     $('[data-subtotal]').textContent = formatMoney(subtotal);
     $("[data-total]").textContent = formatMoney(subtotal);
+
+    const FREE_SHIP = 100;
+    const remaining = FREE_SHIP - subtotal;
+    const fill = Math.min(100, (subtotal / FREE_SHIP) * 100);
+    $("#shipFill").style.width = `${fill}%`;
+    const shipMsg = $("#shipMsg");
+    if (remaining <= 0) {
+      shipMsg.textContent = "You've unlocked free shipping!";
+      shipMsg.classList.add("free");
+    } else {
+      shipMsg.textContent = `Add ${formatMoney(remaining)} more for free shipping`;
+      shipMsg.classList.remove("free");
+    }
   }
 
   /* ---------- Cart events ---------- */
