@@ -636,6 +636,46 @@ button { font-family: inherit; cursor: pointer; }
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
+/* ---------- Checkout modal ---------- */
+.checkout-modal { width: min(560px, 96%); }
+
+.checkout-steps { display: flex; gap: 0.6rem; padding: 1.4rem 2rem 0; }
+.checkout-steps .step { flex: 1; text-align: center; font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; padding-bottom: 0.6rem; border-bottom: 2px solid var(--line); }
+.checkout-steps .step.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+.checkout-body { padding: 1.4rem 2rem 2rem; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-top: 0.9rem; }
+.field { display: flex; flex-direction: column; gap: 0.35rem; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select, .field textarea {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+.field input.invalid { border-color: var(--danger); }
+.field .hint { font-size: 0.72rem; color: var(--danger); min-height: 1em; }
+
+.checkout-actions { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 1.6rem; }
+.checkout-actions .btn { flex: 1; }
+
+.review-list { margin-top: 1rem; border-top: 1px dashed var(--line); padding-top: 1rem; }
+.review-line { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--muted); padding: 0.25rem 0; }
+.review-line strong { color: var(--ink); }
+
+@media (max-width: 520px) {
+  .form-row { grid-template-columns: 1fr; }
+  .checkout-body { padding: 1.2rem 1.2rem 1.6rem; }
+  .checkout-steps { padding: 1.2rem 1.2rem 0; }
+}
+
 /* ---------- Quick view modal ---------- */
 .modal-overlay {
   position: fixed;

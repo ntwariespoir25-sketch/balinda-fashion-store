@@ -250,6 +250,22 @@
     </div>
   </aside>
 
+  <!-- ===== Checkout modal ===== -->
+  <div class="modal-overlay" id="checkoutOverlay" aria-hidden="true">
+    <div class="modal checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <button class="icon-btn modal-close" id="checkoutClose" aria-label="Close checkout">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="checkout-steps" id="checkoutSteps">
+        <span class="step active">1 · Details</span>
+        <span class="step">2 · Shipping</span>
+        <span class="step">3 · Review</span>
+      </div>
+
+      <div id="checkoutBody"></div>
+    </div>
+  </div>
+
   <!-- ===== Quick view modal ===== -->
   <div class="modal-overlay" id="quickOverlay" aria-hidden="true">
     <div class="modal" id="quickView" role="dialog" aria-modal="true" aria-labelledby="quickTitle">

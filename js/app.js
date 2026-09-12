@@ -443,6 +443,166 @@
     else if (rem) removeFromCart(rem.dataset.remove);
   });
 
+  /* ---------- Checkout flow (demo) ---------- */
+  const checkoutNote = $("#checkoutNote");
+  const checkoutOverlay = $("#checkoutOverlay");
+  const checkoutBody = $("#checkoutBody");
+  const checkoutStepsEl = $("#checkoutSteps");
+  const checkoutStepEls = () => $$("#checkoutSteps .step");
+  let checkoutStep = 1;
+  const checkoutData = {};
+  const SHIP_COST = 8;
+
+  function cartSubtotalRaw() {
+    return cart.reduce(
+      (s, item) => s + item.qty * PRODUCTS.find((x) => x.id === item.id).price,
+      0
+    );
+  }
+  function cartTotal() {
+    const raw = cartSubtotalRaw();
+    const discount = promo ? raw * promo.rate : 0;
+    return raw - discount;
+  }
+
+  function renderCheckout() {
+    checkoutBody.innerHTML = buildStep(checkoutStep);
+    checkoutStepEls().forEach((el, i) =>
+      el.classList.toggle("active", i + 1 === checkoutStep)
+    );
+
+    const next = $("#coNext");
+    const back = $("#coBack");
+    const submit = $("#coSubmit");
+    if (next) next.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (validateStep(checkoutStep)) checkoutStep += 1;
+      renderCheckout();
+    });
+    if (back) back.addEventListener("click", () => {
+      checkoutStep -= 1;
+      renderCheckout();
+    });
+    if (submit) {
+      submit.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (!validateStep(checkoutStep)) return;
+        checkoutStep = 3;
+        renderCheckout();
+      });
+      const done = $("#coDone");
+      if (done) done.addEventListener("click", finishCheckout);
+    }
+  }
+
+  function buildStep(step) {
+    if (step === 1) {
+      return `
+        <form novalidate>
+          <div class="form-row">
+            <div class="field full"><label for="coEmail">Email</label><input id="coEmail" type="email" placeholder="you@example.com" value="${checkoutData.email || ""}" /><span class="hint"></span></div>
+            <div class="field"><label for="coName">Full name</label><input id="coName" placeholder="Jane Doe" value="${checkoutData.name || ""}" /><span class="hint"></span></div>
+            <div class="field"><label for="coPhone">Phone</label><input id="coPhone" type="tel" placeholder="+1 555 000 0000" value="${checkoutData.phone || ""}" /><span class="hint"></span></div>
+          </div>
+          <div class="checkout-actions"><button class="btn btn-dark" id="coNext">Continue to Shipping</button></div>
+        </form>`;
+    }
+    if (step === 2) {
+      return `
+        <form novalidate>
+          <div class="form-row">
+            <div class="field full"><label for="coAddr">Street address</label><input id="coAddr" placeholder="12 Fashion Avenue" value="${checkoutData.addr || ""}" /><span class="hint"></span></div>
+            <div class="field"><label for="coCity">City</label><input id="coCity" placeholder="New York" value="${checkoutData.city || ""}" /><span class="hint"></span></div>
+            <div class="field"><label for="coZip">Postcode</label><input id="coZip" placeholder="10001" value="${checkoutData.zip || ""}" /><span class="hint"></span></div>
+          </div>
+          <div class="checkout-actions">
+            <button class="btn btn-outline" id="coBack">Back</button>
+            <button class="btn btn-dark" id="coNext">Review Order</button>
+          </div>
+        </form>`;
+    }
+    return `
+      <p class="hero-eyebrow">Almost there</p>
+      <h2 style="font-family:var(--font-serif);font-size:1.6rem;line-height:1.2">Review your order</h2>
+      <div class="review-list">
+        ${cart.map((item) => {
+          const p = PRODUCTS.find((x) => x.id === item.id);
+          const sizeLabel = item.size ? ` (${item.size})` : "";
+          return `<div class="review-line"><span>${p.name}${sizeLabel} × ${item.qty}</span><strong>${formatMoney(p.price * item.qty)}</strong></div>`;
+        }).join("")}
+        <div class="review-line"><span>Shipping</span><strong>${promo && promo.code === "FREESHIP" ? "Free" : formatMoney(SHIP_COST)}</strong></div>
+        ${promo && promo.rate ? `<div class="review-line"><span>${promo.code} discount</span><strong>-${formatMoney((cartSubtotalRaw() * promo.rate))}</strong></div>` : ""}
+        <div class="review-line" style="margin-top:0.5rem;padding-top:0.6rem;border-top:1px solid var(--line)"><span style="font-weight:700;color:var(--ink)">Total</span><strong>${formatMoney(cartTotal() + (promo && promo.code === "FREESHIP" ? 0 : SHIP_COST))}</strong></div>
+      </div>
+      <p style="margin-top:1rem;font-size:0.85rem;color:var(--muted)">Delivering to ${checkoutData.name || "your address"} — ${checkoutData.addr || "street address"}, ${checkoutData.city || "city"} ${checkoutData.zip || "postcode"}</p>
+      <div class="checkout-actions">
+        <button class="btn btn-outline" id="coBack">Back</button>
+        <button class="btn btn-dark" id="coDone">Place Order — It's a Demo</button>
+      </div>`;
+  }
+
+  function validateStep(step) {
+    const required = {
+      1: ["coEmail", "coName"],
+      2: ["coAddr", "coCity", "coZip"]
+    }[step] || [];
+    let ok = true;
+    required.forEach((id) => {
+      const input = $(`#${id}`);
+      const hint = input.parentElement.querySelector(".hint");
+      const value = (input.value || "").trim();
+      input.classList.remove("invalid");
+      if (!value) {
+        input.classList.add("invalid");
+        hint.textContent = "This field is required.";
+        ok = false;
+      } else if (id === "coEmail" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
+        input.classList.add("invalid");
+        hint.textContent = "Enter a valid email address.";
+        ok = false;
+      } else {
+        hint.textContent = "";
+      }
+      checkoutData[{ coEmail: "email", coName: "name", coPhone: "phone", coAddr: "addr", coCity: "city", coZip: "zip" }[id]] = value;
+    });
+    return ok;
+  }
+
+  function openCheckout() {
+    checkoutStep = 1;
+    renderCheckout();
+    checkoutOverlay.classList.add("show");
+    checkoutOverlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeCheckout() {
+    checkoutOverlay.classList.remove("show");
+    checkoutOverlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  function finishCheckout() {
+    checkoutNote.textContent = "Demo order placed — thank you for shopping Balinda!";
+    checkoutNote.hidden = false;
+    cart = [];
+    promo = null;
+    saveCart();
+    closeCheckout();
+    closeCart();
+    showToast("Order placed — demo complete!");
+  }
+
+  $("#checkoutBtn").addEventListener("click", () => {
+    if (cart.length === 0) {
+      showToast("Your bag is empty");
+      return;
+    }
+    openCheckout();
+  });
+  $("#checkoutClose").addEventListener("click", closeCheckout);
+  checkoutOverlay.addEventListener("click", (e) => {
+    if (e.target === checkoutOverlay) closeCheckout();
+  });
+
   /* ---------- Drawer / overlay ---------- */
   function openCart() {
     cartDrawer.classList.add("open");
@@ -472,20 +632,6 @@
   nav.querySelectorAll("a").forEach((a) =>
     a.addEventListener("click", () => nav.classList.remove("open"))
   );
-
-  /* ---------- Checkout (demo) ---------- */
-  const checkoutNote = $("#checkoutNote");
-  $("#checkoutBtn").addEventListener("click", () => {
-    if (cart.length === 0) {
-      showToast("Your bag is empty");
-      return;
-    }
-    checkoutNote.textContent = "This is a demo — no payment is taken. Thank you for browsing Balinda!";
-    checkoutNote.hidden = false;
-    cart = [];
-    saveCart();
-    showToast("Order placed — demo complete!");
-  });
 
   /* ---------- Newsletter (demo) ---------- */
   $("#newsForm").addEventListener("submit", (e) => {
