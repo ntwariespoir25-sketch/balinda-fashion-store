@@ -69,8 +69,12 @@
 
     <!-- Search bar -->
     <div class="search-bar" id="searchBar">
-      <div class="container">
+      <div class="container search-wrap">
         <input type="text" id="searchInput" placeholder="Search for dresses, shoes, bags..." autocomplete="off" />
+        <button class="icon-btn search-clear" id="searchClear" aria-label="Clear search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="search-suggestions" id="searchSuggestions" hidden></div>
       </div>
     </div>
   </header>

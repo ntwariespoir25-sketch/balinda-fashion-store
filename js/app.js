@@ -178,13 +178,73 @@
     searchDebounce = setTimeout(() => {
       searchTerm = e.target.value.trim().toLowerCase();
       renderProducts();
+      renderSuggestions();
     }, 200);
   });
 
+  /* ---------- Search suggestions ---------- */
+  const searchSuggestions = $("#searchSuggestions");
+  const searchClear = $("#searchClear");
+  const searchBar = $("#searchBar");
+
+  function renderSuggestions() {
+    const value = searchTerm.trim();
+    searchClear.classList.toggle("show", value.length > 0);
+    if (!value) {
+      searchSuggestions.hidden = true;
+      return;
+    }
+    const matches = PRODUCTS.filter((p) =>
+      `${p.name} ${p.category} ${p.description}`.toLowerCase().includes(value)
+    ).slice(0, 5);
+
+    if (!matches.length) {
+      searchSuggestions.innerHTML = `<div class="search-suggestions-item" style="cursor:default"><span class="ss-name" style="font-family:var(--font-serif)">No matches — try another term</span></div>`;
+    } else {
+      searchSuggestions.innerHTML = matches
+        .map(
+          (p) => `
+        <div class="search-suggestions-item" data-goto="${p.id}">
+          <div class="ss-thumb" style="background-image:${productBg(p).replace("background-image:", "").replace(/;$/, "")}"></div>
+          <div>
+            <div class="ss-name">${p.name}</div>
+            <div class="ss-cat">${p.category}</div>
+          </div>
+          <span class="ss-price" style="margin-left:auto">${formatMoney(p.price)}</span>
+        </div>`
+        )
+        .join("");
+    }
+    searchSuggestions.hidden = false;
+  }
+
+  searchSuggestions.addEventListener("click", (e) => {
+    const item = e.target.closest("[data-goto]");
+    if (!item) return;
+    openQuickView(item.dataset.goto);
+    searchBar.classList.remove("open");
+    searchInput.value = "";
+    searchTerm = "";
+    renderProducts();
+  });
+
+  searchClear.addEventListener("click", () => {
+    searchInput.value = "";
+    searchTerm = "";
+    renderProducts();
+    renderSuggestions();
+    searchInput.focus();
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".search-bar")) searchSuggestions.hidden = true;
+  });
+
   $("#searchToggle").addEventListener("click", () => {
-    const bar = $("#searchBar");
-    bar.classList.toggle("open");
-    if (bar.classList.contains("open")) $("#searchInput").focus();
+    searchBar.classList.toggle("open");
+    if (searchBar.classList.contains("open")) {
+      $("#searchInput").focus();
+      renderSuggestions();
+    }
   });
 
   $("#wishToggle").addEventListener("click", () => {
