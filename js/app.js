@@ -788,6 +788,34 @@
   }
   observeReveals();
 
+  /* ---------- Sale countdown ---------- */
+  const SALE_KEY = "balinda-sale-end";
+  function saleEnd() {
+    try {
+      const stored = Number(localStorage.getItem(SALE_KEY));
+      if (stored && stored > Date.now()) return stored;
+    } catch { /* storage unavailable */ }
+    const end = Date.now() + 3 * 24 * 60 * 60 * 1000;
+    try {
+      localStorage.setItem(SALE_KEY, String(end));
+    } catch { /* storage unavailable */ }
+    return end;
+  }
+  const countdownEl = $("#countdown");
+  function tickCountdown() {
+    const diff = saleEnd() - Date.now();
+    if (diff <= 0) {
+      countdownEl.textContent = "00:00:00";
+      return;
+    }
+    const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+    countdownEl.textContent = `${h}:${m}:${s}`;
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();
