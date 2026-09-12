@@ -340,7 +340,9 @@ button { font-family: inherit; cursor: pointer; }
   aspect-ratio: 3 / 3.8;
   background-position: center;
   background-size: cover;
+  transition: background-size 0.5s ease;
 }
+.product-card:hover .product-media { background-size: 115%; }
 
 .product-badge {
   position: absolute;
