@@ -399,6 +399,9 @@ button { font-family: inherit; cursor: pointer; }
 .product-quick:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
 
 .product-swatches { display: flex; gap: 0.35rem; margin-top: 0.4rem; }
+
+.rating { display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--muted); }
+.rating .stars { color: var(--accent); letter-spacing: 0.05em; }
 .swatch {
   width: 18px;
   height: 18px;
