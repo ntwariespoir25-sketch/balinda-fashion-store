@@ -480,6 +480,15 @@ button { font-family: inherit; cursor: pointer; }
 }
 .about-text .btn { margin-top: 2rem; }
 
+/* ---------- Instagram gallery ---------- */
+.insta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+.insta-tile { aspect-ratio: 1; border-radius: var(--radius); display: flex; align-items: flex-end; padding: 1rem; color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 8px rgba(20,18,15,0.5); transition: transform 0.25s; position: relative; overflow: hidden; }
+.insta-tile::after { content: ""; position: absolute; inset: 0; background: rgba(20, 18, 15, 0); transition: background 0.25s; }
+.insta-tile:hover { transform: translateY(-4px); }
+.insta-tile:hover::after { background: rgba(20, 18, 15, 0.25); }
+.insta-tile span { position: relative; z-index: 2; }
+@media (max-width: 720px) { .insta-grid { grid-template-columns: repeat(2, 1fr); } }
+
 /* ---------- Press marquee ---------- */
 .press { background: var(--surface); padding-bottom: 2.4rem; }
 .press-caption { text-align: center; font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.4rem; }
