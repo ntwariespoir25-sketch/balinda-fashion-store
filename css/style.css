@@ -546,6 +546,29 @@ button { font-family: inherit; cursor: pointer; }
 .cart-summary .btn { margin-top: 1.1rem; }
 .checkout-note { margin-top: 0.9rem; text-align: center; font-size: 0.85rem; color: var(--accent); }
 
+/* ---------- Back to top ---------- */
+.to-top {
+  position: fixed;
+  right: 1.4rem;
+  bottom: 1.4rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: #f5f1ea;
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: all 0.3s;
+  z-index: 80;
+}
+.to-top.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.to-top:hover { background: var(--accent); }
+
 /* ---------- Toast ---------- */
 .toast {
   position: fixed;

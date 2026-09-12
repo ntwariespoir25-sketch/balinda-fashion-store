@@ -326,6 +326,17 @@
   window.addEventListener("scroll", updateProgress, { passive: true });
   updateProgress();
 
+  /* ---------- Back to top ---------- */
+  const toTop = $("#toTop");
+  function updateToTop() {
+    toTop.classList.toggle("show", window.scrollY > 560);
+  }
+  window.addEventListener("scroll", updateToTop, { passive: true });
+  updateToTop();
+  toTop.addEventListener("click", () =>
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  );
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();
