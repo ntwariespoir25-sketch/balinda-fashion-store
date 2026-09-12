@@ -30,9 +30,19 @@
   const toast = $("#toast");
 
   /* ---------- Cart persistence ---------- */
+  const CART_KEY = "balinda-cart";
+  const CART_VERSION = 2;
+
   function loadCart() {
     try {
-      return JSON.parse(localStorage.getItem("balinda-cart")) || [];
+      const raw = JSON.parse(localStorage.getItem(CART_KEY));
+      const items = raw && raw.items ? raw.items : raw;
+      if (!Array.isArray(items)) return [];
+      const legacy = items.filter((i) => i && i.id);
+      // migrate legacy lines (no uid) by assigning new identifiers
+      return legacy.map((item, idx) =>
+        item.uid ? item : { uid: `legacy-${Date.now()}-${idx}`, ...item, size: item.size || null }
+      );
     } catch {
       return [];
     }
@@ -40,7 +50,10 @@
 
   function saveCart() {
     try {
-      localStorage.setItem("balinda-cart", JSON.stringify(cart));
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify({ version: CART_VERSION, items: cart })
+      );
     } catch {
       /* storage unavailable */
     }
