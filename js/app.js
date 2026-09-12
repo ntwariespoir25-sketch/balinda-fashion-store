@@ -860,35 +860,41 @@
     renderProducts();
   }
 
-  /* ---------- Scroll progress ---------- */
+  /* ---------- Scroll handlers (rAF throttled) ---------- */
   const progressBar = $("#progressBar");
+  const toTop = $("#toTop");
+  const header = $(".header");
+
   function updateProgress() {
     const scrollable =
       document.documentElement.scrollHeight - window.innerHeight;
     const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
     progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
   }
-  window.addEventListener("scroll", updateProgress, { passive: true });
-  updateProgress();
-
-  /* ---------- Back to top ---------- */
-  const toTop = $("#toTop");
   function updateToTop() {
     toTop.classList.toggle("show", window.scrollY > 560);
   }
-  window.addEventListener("scroll", updateToTop, { passive: true });
-  updateToTop();
-  toTop.addEventListener("click", () =>
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  );
-
-  /* ---------- Header elevation ---------- */
-  const header = $(".header");
   function updateHeader() {
     header.classList.toggle("scrolled", window.scrollY > 24);
   }
-  window.addEventListener("scroll", updateHeader, { passive: true });
-  updateHeader();
+
+  let scrolling = false;
+  function onScroll() {
+    if (scrolling) return;
+    scrolling = true;
+    requestAnimationFrame(() => {
+      updateProgress();
+      updateToTop();
+      updateHeader();
+      scrolling = false;
+    });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  toTop.addEventListener("click", () =>
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  );
 
   /* ---------- Scroll reveal ---------- */
   const revealObserver = new IntersectionObserver(
