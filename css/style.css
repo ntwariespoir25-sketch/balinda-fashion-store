@@ -280,6 +280,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .cat-label h3 { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 600; }
 .cat-label span { font-size: 0.8rem; opacity: 0.85; letter-spacing: 0.04em; }
+.cat-count { display: inline-block; margin-left: 0.4rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: rgba(255, 255, 255, 0.22); font-size: 0.7rem; }
 
 /* ---------- Toolbar ---------- */
 .toolbar {

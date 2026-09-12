@@ -190,6 +190,17 @@
     el.addEventListener("click", () => setFilter(el.dataset.col))
   );
 
+  // Product counts on category cards
+  $$(".cat-card").forEach((card) => {
+    const label = card.querySelector(".cat-label span");
+    if (!label) return;
+    const count = PRODUCTS.filter((p) => p.category === card.dataset.cat).length;
+    const existing = label.querySelector(".cat-count");
+    if (!existing) {
+      label.insertAdjacentHTML("beforeend", `<span class="cat-count">${count}</span>`);
+    }
+  });
+
   /* ---------- Recently viewed ---------- */
   const recentStrip = $("#recentStrip");
   const recentRow = $("#recentRow");
