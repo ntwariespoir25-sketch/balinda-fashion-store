@@ -161,33 +161,118 @@
     el.addEventListener("click", () => setFilter(el.dataset.col))
   );
 
+  /* ---------- Quick view ---------- */
+  const quickOverlay = $("#quickOverlay");
+  const quickMedia = $("#quickMedia");
+  const quickBody = $("#quickBody");
+  let quickProduct = null;
+  let quickSize = "XS";
+
+  const SIZES = ["XS", "S", "M", "L", "XL"];
+
+  function openQuickView(id) {
+    const p = PRODUCTS.find((x) => x.id === Number(id));
+    if (!p) return;
+    quickProduct = p;
+    quickSize = "XS";
+
+    quickMedia.style.backgroundImage = productBg(p)
+      .replace("background-image:", "")
+      .replace(/;$/, "");
+
+    quickBody.innerHTML = `
+      <p class="hero-eyebrow">${p.category}</p>
+      <h2 id="quickTitle">${p.name}</h2>
+      <div class="quick-price-row">
+        <span class="product-price ${p.oldPrice ? "sale" : ""}">${formatMoney(p.price)}</span>
+        ${p.oldPrice ? `<span class="product-price old">${formatMoney(p.oldPrice)}</span>` : ""}
+      </div>
+      <div class="rating" style="margin-top:0.4rem"><span class="stars">${"★".repeat(Math.round(p.rating))}</span><span>${p.rating.toFixed(1)} &middot; ${stockLabel(p)}</span></div>
+      <p class="quick-desc">${p.description}</p>
+      <span class="size-label">Select size</span>
+      <div class="size-row">
+        ${SIZES.map((s) => `<button class="size-chip ${s === "XS" ? "selected" : ""}" data-size="${s}">${s}</button>`).join("")}
+      </div>
+      <div class="quick-actions">
+        <button class="btn btn-dark" id="quickAdd" ${p.stock === 0 ? "disabled" : ""}>${p.stock === 0 ? "Sold Out" : "Add to Bag"}</button>
+        <button class="btn btn-outline quick-cart-toggle">View Bag</button>
+      </div>`;
+
+    quickBody.querySelectorAll(".size-chip").forEach((chip) =>
+      chip.addEventListener("click", () => {
+        quickBody.querySelectorAll(".size-chip").forEach((c) => c.classList.remove("selected"));
+        chip.classList.add("selected");
+        quickSize = chip.dataset.size;
+      })
+    );
+
+    $("#quickAdd").addEventListener("click", () =>
+      addToCart(quickProduct.id, quickSize)
+    );
+    quickBody.querySelector(".quick-cart-toggle").addEventListener("click", () => {
+      closeQuickView();
+      openCart();
+    });
+
+    quickOverlay.classList.add("show");
+    quickOverlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeQuickView() {
+    quickOverlay.classList.remove("show");
+    quickOverlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  function stockLabel(p) {
+    if (p.stock === 0) return "Sold out";
+    if (p.stock <= 5) return `Only ${p.stock} left`;
+    return "In stock";
+  }
+
+  $("#quickClose").addEventListener("click", closeQuickView);
+  quickOverlay.addEventListener("click", (e) => {
+    if (e.target === quickOverlay) closeQuickView();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeQuickView();
+  });
+
   /* ---------- Cart operations ---------- */
-  function addToCart(id) {
+  function addToCart(id, size) {
     const product = PRODUCTS.find((p) => p.id === Number(id));
     if (!product) return;
 
-    const existing = cart.find((i) => i.id === product.id);
+    if (product.stock === 0) {
+      showToast("Sorry, this piece is sold out");
+      return;
+    }
+
+    const existing = cart.find(
+      (i) => i.id === product.id && i.size === (size || null)
+    );
     if (existing) {
-      existing.qty += 1;
+      existing.qty = Math.min(existing.qty + 1, 10);
     } else {
-      cart.push({ id: product.id, qty: 1 });
+      cart.push({ uid: Date.now().toString(36), id: product.id, qty: 1, size: size || null });
     }
     saveCart();
     showToast(`${product.name} added to your bag`);
   }
 
-  function changeQty(id, delta) {
-    const item = cart.find((i) => i.id === Number(id));
+  function changeQty(uid, delta) {
+    const item = cart.find((i) => i.uid === uid);
     if (!item) return;
     item.qty += delta;
     if (item.qty <= 0) {
-      cart = cart.filter((i) => i.id !== Number(id));
+      cart = cart.filter((i) => i.uid !== uid);
     }
     saveCart();
   }
 
-  function removeFromCart(id) {
-    cart = cart.filter((i) => i.id !== Number(id));
+  function removeFromCart(uid) {
+    cart = cart.filter((i) => i.uid !== uid);
     saveCart();
   }
 
@@ -218,21 +303,22 @@
       .map((item) => {
         const p = PRODUCTS.find((x) => x.id === item.id);
         if (!p) return "";
+        const sizeLabel = item.size ? ` · Size ${item.size}` : "";
         return `
-        <div class="cart-item" data-id="${p.id}">
+        <div class="cart-item" data-uid="${item.uid}">
           <div class="cart-item-media" style="${productBg(p)}"></div>
           <div class="cart-item-info">
             <h4>${p.name}</h4>
-            <div class="meta">${p.category} &middot; ${formatMoney(p.price)}</div>
+            <div class="meta">${p.category}${sizeLabel} · ${formatMoney(p.price)}</div>
             <div class="qty-control">
-              <button data-dec="${p.id}" aria-label="Decrease quantity">&minus;</button>
+              <button data-dec="${item.uid}" aria-label="Decrease quantity">&minus;</button>
               <span>${item.qty}</span>
-              <button data-inc="${p.id}" aria-label="Increase quantity">&plus;</button>
+              <button data-inc="${item.uid}" aria-label="Increase quantity">&plus;</button>
             </div>
           </div>
           <div class="cart-item-side">
             <span class="cart-item-price">${formatMoney(p.price * item.qty)}</span>
-            <button class="remove-btn" data-remove="${p.id}">Remove</button>
+            <button class="remove-btn" data-remove="${item.uid}">Remove</button>
           </div>
         </div>`;
       })
@@ -251,7 +337,12 @@
   /* ---------- Cart events ---------- */
   productsGrid.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-add]");
-    if (btn) addToCart(btn.dataset.add);
+    if (btn) {
+      addToCart(btn.dataset.add);
+      return;
+    }
+    const card = e.target.closest(".product-card");
+    if (card) openQuickView(card.dataset.id);
   });
 
   cartItems.addEventListener("click", (e) => {
