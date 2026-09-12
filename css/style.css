@@ -398,6 +398,17 @@ button { font-family: inherit; cursor: pointer; }
 .product-quick:hover { background: var(--ink); color: #f5f1ea; }
 .product-quick:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
 
+.product-swatches { display: flex; gap: 0.35rem; margin-top: 0.4rem; }
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--line);
+  transition: transform 0.15s;
+}
+.swatch:hover { transform: scale(1.25); }
+
 .product-info { padding: 1.1rem 1.1rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; flex: 1; }
 .product-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; }
 .product-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; line-height: 1.25; }

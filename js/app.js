@@ -107,6 +107,7 @@
           <span class="product-cat">${p.category}</span>
           <h3 class="product-name">${p.name}</h3>
           ${stockNote(p)}
+          ${p.colors.length ? `<div class="product-swatches">${p.colors.map((c) => `<span class="swatch" style="background:${c}" title="Colour"></span>`).join("")}</div>` : ""}
           <div class="product-price-row">
             <span class="product-price ${p.oldPrice ? "sale" : ""}">${formatMoney(p.price)}</span>
             ${p.oldPrice ? `<span class="product-price old">${formatMoney(p.oldPrice)}</span>` : ""}
