@@ -1,0 +1,17 @@
+# Misc
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# OS noise
+node_modules/
+.DS_Store
+*.local
