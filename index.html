@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Balinda Fashion Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Announcement bar ===== -->
+  <div class="announcement">
+    <p>Free shipping on orders over $100 &middot; New season drop is here</p>
+  </div>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="container header-inner">
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <a href="#home" class="logo">Balinda<span>.</span></a>
+
+      <nav class="nav" id="nav">
+        <a href="#home">Home</a>
+        <a href="#shop">Shop</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="searchToggle" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button class="icon-btn cart-btn" id="cartToggle" aria-label="Open cart">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="search-bar" id="searchBar">
+      <div class="container">
+        <input type="text" id="searchInput" placeholder="Search for dresses, shoes, bags..." autocomplete="off" />
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="home">
+    <div class="container hero-inner">
+      <p class="hero-eyebrow">New Collection 2026</p>
+      <h1>Elegance,<br />Woven Into <em>Every Thread</em></h1>
+      <p class="hero-sub">Discover timeless fashion designed for the modern woman — quality fabrics, bold silhouettes, effortless style.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn btn-dark">Shop Now</a>
+        <a href="#about" class="btn btn-outline">Our Story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Featured categories ===== -->
+  <section class="section categories" aria-label="Categories">
+    <div class="container">
+      <div class="section-head">
+        <h2>Shop by Category</h2>
+        <p>Hand-picked pieces across our most-loved ranges.</p>
+      </div>
+      <div class="category-grid">
+        <a class="cat-card" data-cat="dresses" href="#shop">
+          <div class="cat-img cat-dresses"></div>
+          <div class="cat-label"><h3>Dresses</h3><span>View all</span></div>
+        </a>
+        <a class="cat-card" data-cat="outerwear" href="#shop">
+          <div class="cat-img cat-outerwear"></div>
+          <div class="cat-label"><h3>Outerwear</h3><span>View all</span></div>
+        </a>
+        <a class="cat-card" data-cat="knitwear" href="#shop">
+          <div class="cat-img cat-knitwear"></div>
+          <div class="cat-label"><h3>Knitwear</h3><span>View all</span></div>
+        </a>
+        <a class="cat-card" data-cat="accessories" href="#shop">
+          <div class="cat-img cat-accessories"></div>
+          <div class="cat-label"><h3>Accessories</h3><span>View all</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Shop / product grid ===== -->
+  <section class="section" id="shop">
+    <div class="container">
+      <div class="section-head">
+        <h2>The Collection</h2>
+        <p>Every piece, thoughtfully crafted.</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="dresses">Dresses</button>
+          <button class="filter-tab" data-filter="outerwear">Outerwear</button>
+          <button class="filter-tab" data-filter="knitwear">Knitwear</button>
+          <button class="filter-tab" data-filter="accessories">Accessories</button>
+        </div>
+        <select class="sort-select" id="sortSelect" aria-label="Sort products">
+          <option value="featured">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="products-grid" id="productsGrid"></div>
+
+      <p class="empty-state" id="emptyState" hidden>No products match your search.</p>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="section about" id="about">
+    <div class="container about-inner">
+      <div class="about-visual cat-about"></div>
+      <div class="about-text">
+        <p class="hero-eyebrow">Our Story</p>
+        <h2>Founded on Craft,<br />Driven by Confidence</h2>
+        <p>Balinda began with a simple belief: fashion should make you feel unstoppable. Each collection is designed in-house, sourced responsibly, and made to last beyond the season.</p>
+        <ul class="about-points">
+          <li>Responsibly sourced fabrics</li>
+          <li>Fairly made, built to last</li>
+          <li>Fast worldwide shipping</li>
+          <li>Easy 30-day returns</li>
+        </ul>
+        <a href="#shop" class="btn btn-dark">Explore Collection</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Newsletter ===== -->
+  <section class="section newsletter">
+    <div class="container news-inner">
+      <h2>Join the Balinda List</h2>
+      <p>Get early access to drops, private sales, and style notes. No spam, ever.</p>
+      <form class="news-form" id="newsForm">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit" class="btn btn-dark">Subscribe</button>
+      </form>
+      <p class="news-msg" id="newsMsg" hidden>You're on the list. Welcome to Balinda!</p>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer" id="contact">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="logo light">Balinda<span>.</span></a>
+        <p>Timeless fashion for the modern woman. Designed with care, made to last.</p>
+        <p class="footer-contact">hello@balinda.store &middot; +1 (555) 012-3456</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="#shop" data-col="dresses">Dresses</a>
+        <a href="#shop" data-col="outerwear">Outerwear</a>
+        <a href="#shop" data-col="knitwear">Knitwear</a>
+        <a href="#shop" data-col="accessories">Accessories</a>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a href="#shop">Shipping & Returns</a>
+        <a href="#shop">Size Guide</a>
+        <a href="#shop">FAQs</a>
+        <a href="#contact">Contact Us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow</h4>
+        <a href="#home">Instagram</a>
+        <a href="#home">TikTok</a>
+        <a href="#home">Pinterest</a>
+        <a href="#home">YouTube</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Balinda Fashion Store. Frontend demo — product images are placeholder art.</p>
+    </div>
+  </footer>
+
+  <!-- ===== Cart drawer ===== -->
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-header">
+      <h3>Your Cart <span id="cartHeaderCount">(0)</span></h3>
+      <button class="icon-btn" id="cartClose" aria-label="Close cart">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty">
+        <p>Your cart is empty.</p>
+        <a href="#shop" class="btn btn-outline" id="cartContinue">Start Shopping</a>
+      </div>
+    </div>
+
+    <div class="cart-summary" id="cartSummary" hidden>
+      <div class="summary-row"><span>Subtotal</span><span data-subtotal>$0.00</span></div>
+      <div class="summary-row"><span>Shipping</span><span>Calculated at checkout</span></div>
+      <div class="summary-row total"><span>Total</span><span data-total>$0.00</span></div>
+      <button class="btn btn-dark block" id="checkoutBtn">Checkout</button>
+      <p class="checkout-note" id="checkoutNote" hidden>This is a demo — no payment is taken. Thank you for browsing Balinda!</p>
+    </div>
+  </aside>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
