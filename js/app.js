@@ -315,6 +315,17 @@
     if (e.target.matches(".cart-empty a, #cartContinue")) closeCart();
   });
 
+  /* ---------- Scroll progress ---------- */
+  const progressBar = $("#progressBar");
+  function updateProgress() {
+    const scrollable =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+    progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+  }
+  window.addEventListener("scroll", updateProgress, { passive: true });
+  updateProgress();
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();
