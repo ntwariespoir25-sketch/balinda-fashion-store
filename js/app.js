@@ -105,7 +105,25 @@
     return `<span class="stock-note in-stock">In stock</span>`;
   }
 
+  let executedInitialRender = false;
+
   function renderProducts() {
+    if (!executedInitialRender) {
+      executedInitialRender = true;
+      productsGrid.innerHTML = Array.from({ length: 8 })
+        .map(
+          () => `
+        <div class="skeleton-card">
+          <div class="sk-media"></div>
+          <div class="sk-line"></div>
+          <div class="sk-line short"></div>
+        </div>`
+        )
+        .join("");
+      setTimeout(renderProducts, 500);
+      return;
+    }
+
     const list = visibleProducts();
     emptyState.hidden = list.length > 0;
 
