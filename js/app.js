@@ -190,6 +190,51 @@
     el.addEventListener("click", () => setFilter(el.dataset.col))
   );
 
+  /* ---------- Recently viewed ---------- */
+  const recentStrip = $("#recentStrip");
+  const recentRow = $("#recentRow");
+
+  function getRecent() {
+    try {
+      const list = JSON.parse(localStorage.getItem("balinda-recent")) || [];
+      return list.map(Number).filter((n) => Number.isInteger(n));
+    } catch {
+      return [];
+    }
+  }
+  function recordRecent(id) {
+    const list = getRecent();
+    const next = [Number(id), ...list.filter((x) => x !== Number(id))].slice(0, 6);
+    try {
+      localStorage.setItem("balinda-recent", JSON.stringify(next));
+    } catch {
+      /* storage unavailable */
+    }
+  }
+  function renderRecent() {
+    const list = getRecent().filter((id) => PRODUCTS.some((p) => p.id === id));
+    if (!list.length) {
+      recentStrip.hidden = true;
+      return;
+    }
+    recentStrip.hidden = false;
+    recentRow.innerHTML = list
+      .map((id) => {
+        const p = PRODUCTS.find((x) => x.id === id);
+        return `
+          <div class="recent-item" data-view="${p.id}">
+            <div class="thumb" style="background-image:${productBg(p).replace("background-image:", "").replace(/;$/, "")}"></div>
+            <div class="thumb-note">${p.name}</div>
+            <div class="thumb-price">${formatMoney(p.price)}</div>
+          </div>`;
+      })
+      .join("");
+  }
+  recentRow.addEventListener("click", (e) => {
+    const item = e.target.closest("[data-view]");
+    if (item) openQuickView(item.dataset.view);
+  });
+
   /* ---------- Quick view ---------- */
   const quickOverlay = $("#quickOverlay");
   const quickMedia = $("#quickMedia");
@@ -204,6 +249,7 @@
     if (!p) return;
     quickProduct = p;
     quickSize = "XS";
+    recordRecent(p.id);
 
     quickMedia.style.backgroundImage = productBg(p)
       .replace("background-image:", "")
@@ -746,4 +792,5 @@
   renderProducts();
   updateCartUI();
   updateWishlistUI();
+  renderRecent();
 })();
