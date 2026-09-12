@@ -8,7 +8,7 @@
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-  const CURRENCY = { symbol: "$", code: "USD" };
+  const { CART_KEY, CART_VERSION, WISHLIST_KEY, RECENT_KEY, SALE_KEY } = CONFIG;
 
   /* ---------- State ---------- */
   let cart = loadCart();
@@ -16,6 +16,9 @@
   let searchTerm = "";
   let sortBy = "featured";
   let wishlistOnly = false;
+
+  /* ---------- Wishlist state ---------- */
+  let wishlist = loadWishlist();
 
   /* ---------- Elements ---------- */
   const productsGrid = $("#productsGrid");
@@ -29,9 +32,6 @@
   const wishCount = $("#wishCount");
 
   /* ---------- Cart persistence ---------- */
-  const CART_KEY = "balinda-cart";
-  const CART_VERSION = 2;
-
   function loadCart() {
     try {
       const raw = JSON.parse(localStorage.getItem(CART_KEY));
@@ -59,13 +59,26 @@
     updateCartUI();
   }
 
-  /* ---------- Money ---------- */
-  const formatMoney = (n) => `${CURRENCY.symbol}${n.toFixed(2)}`;
-
-  /* ---------- Product images (CSS gradients) ---------- */
-  const productBg = (p) =>
-    `background-image: radial-gradient(circle at 30% 25%, ${p.image[0]}, ${p.image[1]} 78%),
-     linear-gradient(160deg, ${p.image[0]}, ${p.image[1]});`;
+  /* ---------- Wishlist ---------- */
+  function loadWishlist() {
+    try {
+      return JSON.parse(localStorage.getItem(WISHLIST_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+  function saveWishlist() {
+    try {
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    } catch {
+      /* storage unavailable */
+    }
+    updateWishlistUI();
+  }
+  function updateWishlistUI() {
+    wishCount.textContent = wishlist.length;
+    wishCount.classList.toggle("show", wishlist.length > 0);
+  }
 
   /* ---------- Render products ---------- */
   function visibleProducts() {
@@ -219,7 +232,7 @@
         .map(
           (p) => `
         <div class="search-suggestions-item" data-goto="${p.id}">
-          <div class="ss-thumb" style="background-image:${productBg(p).replace("background-image:", "").replace(/;$/, "")}"></div>
+          <div class="ss-thumb" style="background-image:${bgImageSource(p)}"></div>
           <div>
             <div class="ss-name">${p.name}</div>
             <div class="ss-cat">${p.category}</div>
@@ -298,7 +311,7 @@
 
   function getRecent() {
     try {
-      const list = JSON.parse(localStorage.getItem("balinda-recent")) || [];
+      const list = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
       return list.map(Number).filter((n) => Number.isInteger(n));
     } catch {
       return [];
@@ -308,7 +321,7 @@
     const list = getRecent();
     const next = [Number(id), ...list.filter((x) => x !== Number(id))].slice(0, 6);
     try {
-      localStorage.setItem("balinda-recent", JSON.stringify(next));
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
     } catch {
       /* storage unavailable */
     }
@@ -325,7 +338,7 @@
         const p = PRODUCTS.find((x) => x.id === id);
         return `
           <div class="recent-item" data-view="${p.id}">
-            <div class="thumb" style="background-image:${productBg(p).replace("background-image:", "").replace(/;$/, "")}"></div>
+            <div class="thumb" style="background-image:${bgImageSource(p)}"></div>
             <div class="thumb-note">${p.name}</div>
             <div class="thumb-price">${formatMoney(p.price)}</div>
           </div>`;
@@ -344,18 +357,14 @@
   let quickProduct = null;
   let quickSize = "XS";
 
-  const SIZES = ["XS", "S", "M", "L", "XL"];
-
   function openQuickView(id) {
     const p = PRODUCTS.find((x) => x.id === Number(id));
     if (!p) return;
     quickProduct = p;
-    quickSize = "XS";
+    quickSize = CONFIG.SIZES[0];
     recordRecent(p.id);
 
-    quickMedia.style.backgroundImage = productBg(p)
-      .replace("background-image:", "")
-      .replace(/;$/, "");
+    quickMedia.style.backgroundImage = bgImageSource(p);
 
     quickBody.innerHTML = `
       <p class="hero-eyebrow">${p.category}</p>
@@ -368,7 +377,7 @@
       <p class="quick-desc">${p.description}</p>
       <span class="size-label">Select size</span>
       <div class="size-row">
-        ${SIZES.map((s) => `<button class="size-chip ${s === "XS" ? "selected" : ""}" data-size="${s}">${s}</button>`).join("")}
+        ${CONFIG.SIZES.map((s) => `<button class="size-chip ${s === CONFIG.SIZES[0] ? "selected" : ""}" data-size="${s}">${s}</button>`).join("")}
       </div>
       <div class="quick-actions">
         <button class="btn btn-dark" id="quickAdd" ${p.stock === 0 ? "disabled" : ""}>${p.stock === 0 ? "Sold Out" : "Add to Bag"}</button>
@@ -438,7 +447,7 @@
     showToast(`${product.name} added to your bag`);
   }
 
-  const MAX_QTY = 10;
+  const MAX_QTY = CONFIG.MAX_QTY;
 
   function changeQty(uid, delta) {
     const item = cart.find((i) => i.uid === uid);
@@ -521,11 +530,7 @@
       .join("");
   }
 
-  const PROMOS = {
-    BALINDA10: 0.1,
-    NEWSEASON: 0.15,
-    FREESHIP: 0
-  };
+  const PROMOS = CONFIG.PROMOS;
   let promo = null;
 
   function renderCartSummary() {
@@ -541,7 +546,7 @@
     $("#discountRow").hidden = !promo || discount <= 0;
     $("[data-discount]").textContent = `-${formatMoney(discount)}`;
 
-    const FREE_SHIP = 100;
+    const FREE_SHIP = CONFIG.FREE_SHIP_THRESHOLD;
     const remaining = FREE_SHIP - subtotal;
     const fill = Math.min(100, (subtotal / FREE_SHIP) * 100);
     $("#shipFill").style.width = `${fill}%`;
@@ -824,27 +829,7 @@
   const EMPTY_HEART =
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4 8 4c1.6 0 3.1.8 4 2 .9-1.2 2.4-2 4-2 2.8 0 5 2.4 5 5.3 0 3.9-4 7.2-9 11.7z"/></svg>';
 
-  /* ---------- Wishlist ---------- */
-  let wishlist = loadWishlist();
-  function loadWishlist() {
-    try {
-      return JSON.parse(localStorage.getItem("balinda-wishlist")) || [];
-    } catch {
-      return [];
-    }
-  }
-  function saveWishlist() {
-    try {
-      localStorage.setItem("balinda-wishlist", JSON.stringify(wishlist));
-    } catch {
-      /* storage unavailable */
-    }
-    updateWishlistUI();
-  }
-  function updateWishlistUI() {
-    wishCount.textContent = wishlist.length;
-    wishCount.classList.toggle("show", wishlist.length > 0);
-  }
+  /* ---------- Wishlist toggle ---------- */
   function toggleWishlist(id) {
     const product = PRODUCTS.find((p) => p.id === Number(id));
     if (!product) return;
@@ -914,7 +899,6 @@
   observeReveals();
 
   /* ---------- Sale countdown ---------- */
-  const SALE_KEY = "balinda-sale-end";
   function saleEnd() {
     try {
       const stored = Number(localStorage.getItem(SALE_KEY));
