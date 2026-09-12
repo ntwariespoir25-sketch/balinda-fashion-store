@@ -34,6 +34,8 @@
   const promoInput = $("#promoInput");
   const promoStatus = $("#promoStatus");
 
+  const productById = (id) => PRODUCTS.find((x) => x.id === Number(id));
+
   /* ---------- Cart persistence ---------- */
   function loadCart() {
     try {
@@ -338,7 +340,7 @@
     recentStrip.hidden = false;
     recentRow.innerHTML = list
       .map((id) => {
-        const p = PRODUCTS.find((x) => x.id === id);
+        const p = productById(id);
         return `
           <div class="recent-item" data-view="${p.id}">
             <div class="thumb" style="background-image:${bgImageSource(p)}"></div>
@@ -361,7 +363,7 @@
   let quickSize = "XS";
 
   function openQuickView(id) {
-    const p = PRODUCTS.find((x) => x.id === Number(id));
+    const p = productById(id);
     if (!p) return;
     quickProduct = p;
     quickSize = CONFIG.SIZES[0];
@@ -430,7 +432,7 @@
 
   /* ---------- Cart operations ---------- */
   function addToCart(id, size) {
-    const product = PRODUCTS.find((p) => p.id === Number(id));
+    const product = productById(id);
     if (!product) return;
 
     if (product.stock === 0) {
@@ -509,7 +511,7 @@
     cartSummary.hidden = false;
     cartItems.innerHTML = cart
       .map((item) => {
-        const p = PRODUCTS.find((x) => x.id === item.id);
+        const p = productById(item.id);
         if (!p) return "";
         const sizeLabel = item.size ? ` · Size ${item.size}` : "";
         return `
@@ -538,7 +540,7 @@
 
   function renderCartSummary() {
     const rawSubtotal = cart.reduce(
-      (s, item) => s + item.qty * PRODUCTS.find((x) => x.id === item.id).price,
+      (s, item) => s + item.qty * (productById(item.id) || { price: 0 }).price,
       0
     );
     const discount = promo ? rawSubtotal * promo.rate : 0;
@@ -623,7 +625,7 @@
 
   function cartSubtotalRaw() {
     return cart.reduce(
-      (s, item) => s + item.qty * PRODUCTS.find((x) => x.id === item.id).price,
+      (s, item) => s + item.qty * (productById(item.id) || { price: 0 }).price,
       0
     );
   }
@@ -694,7 +696,7 @@
       <h2 style="font-family:var(--font-serif);font-size:1.6rem;line-height:1.2">Review your order</h2>
       <div class="review-list">
         ${cart.map((item) => {
-          const p = PRODUCTS.find((x) => x.id === item.id);
+          const p = productById(item.id);
           const sizeLabel = item.size ? ` (${item.size})` : "";
           return `<div class="review-line"><span>${p.name}${sizeLabel} × ${item.qty}</span><strong>${formatMoney(p.price * item.qty)}</strong></div>`;
         }).join("")}
@@ -834,7 +836,7 @@
 
   /* ---------- Wishlist toggle ---------- */
   function toggleWishlist(id) {
-    const product = PRODUCTS.find((p) => p.id === Number(id));
+    const product = productById(id);
     if (!product) return;
     const idx = wishlist.indexOf(Number(id));
     if (idx > -1) {
