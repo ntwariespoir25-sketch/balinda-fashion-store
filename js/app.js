@@ -125,6 +125,13 @@
 
     const list = visibleProducts();
     emptyState.hidden = list.length > 0;
+    const resultCount = $("#resultCount");
+    if (searchTerm || activeFilter !== "all") {
+      resultCount.hidden = false;
+      resultCount.textContent = `Showing ${list.length} of ${PRODUCTS.length} products`;
+    } else {
+      resultCount.hidden = true;
+    }
 
     productsGrid.innerHTML = list
       .map(
