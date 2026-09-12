@@ -341,13 +341,25 @@
       .join("");
   }
 
+  const PROMOS = {
+    BALINDA10: 0.1,
+    NEWSEASON: 0.15,
+    FREESHIP: 0
+  };
+  let promo = null;
+
   function renderCartSummary() {
-    const subtotal = cart.reduce(
+    const rawSubtotal = cart.reduce(
       (s, item) => s + item.qty * PRODUCTS.find((x) => x.id === item.id).price,
       0
     );
-    $('[data-subtotal]').textContent = formatMoney(subtotal);
+    const discount = promo ? rawSubtotal * promo.rate : 0;
+    const subtotal = rawSubtotal - discount;
+
+    $('[data-subtotal]').textContent = formatMoney(rawSubtotal);
     $("[data-total]").textContent = formatMoney(subtotal);
+    $("#discountRow").hidden = !promo || discount <= 0;
+    $("[data-discount]").textContent = `-${formatMoney(discount)}`;
 
     const FREE_SHIP = 100;
     const remaining = FREE_SHIP - subtotal;
@@ -362,6 +374,28 @@
       shipMsg.classList.remove("free");
     }
   }
+
+  $("#promoApply").addEventListener("click", () => {
+    const code = $("#promoInput").value.trim().toUpperCase();
+    const status = $("#promoStatus");
+    if (!code) {
+      status.textContent = "Enter a code to apply.";
+      status.className = "promo-status err";
+      status.hidden = false;
+      return;
+    }
+    if (PROMOS[code] !== undefined) {
+      promo = { code, rate: PROMOS[code] };
+      status.textContent = `Promo ${code} applied${PROMOS[code] ? ` — ${Math.round(PROMOS[code] * 100)}% off` : " — free shipping!"}`;
+      status.className = "promo-status ok";
+      status.hidden = false;
+      renderCartSummary();
+    } else {
+      status.textContent = "That code isn't valid. Try BALINDA10.";
+      status.className = "promo-status err";
+      status.hidden = false;
+    }
+  });
 
   /* ---------- Cart events ---------- */
   productsGrid.addEventListener("click", (e) => {
