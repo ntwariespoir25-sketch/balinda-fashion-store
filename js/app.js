@@ -466,9 +466,21 @@
     cartCount.textContent = totalQty;
     cartCount.classList.toggle("show", totalQty > 0);
     cartHeaderCount.textContent = `(${totalQty})`;
+    announce(`Bag updated: ${totalQty} item${totalQty === 1 ? "" : "s"}`);
 
     renderCartItems();
     renderCartSummary();
+  }
+
+  function announce(message) {
+    let region = document.getElementById("sr-announce");
+    if (!region) {
+      region = document.createElement("div");
+      region.id = "sr-announce";
+      region.className = "sr-only";
+      document.body.appendChild(region);
+    }
+    region.textContent = message;
   }
 
   function renderCartItems() {
