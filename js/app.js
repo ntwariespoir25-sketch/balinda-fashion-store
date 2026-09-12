@@ -30,6 +30,9 @@
   const cartCount = $("#cartCount");
   const cartHeaderCount = $("#cartHeaderCount");
   const wishCount = $("#wishCount");
+  const searchInput = $("#searchInput");
+  const promoInput = $("#promoInput");
+  const promoStatus = $("#promoStatus");
 
   /* ---------- Cart persistence ---------- */
   function loadCart() {
@@ -200,7 +203,7 @@
   });
 
   let searchDebounce;
-  $("#searchInput").addEventListener("input", (e) => {
+  searchInput.addEventListener("input", (e) => {
     clearTimeout(searchDebounce);
     searchDebounce = setTimeout(() => {
       searchTerm = e.target.value.trim().toLowerCase();
@@ -269,7 +272,7 @@
   $("#searchToggle").addEventListener("click", () => {
     searchBar.classList.toggle("open");
     if (searchBar.classList.contains("open")) {
-      $("#searchInput").focus();
+      searchInput.focus();
       renderSuggestions();
     }
   });
@@ -561,8 +564,8 @@
   }
 
   $("#promoApply").addEventListener("click", () => {
-    const code = $("#promoInput").value.trim().toUpperCase();
-    const status = $("#promoStatus");
+    const code = promoInput.value.trim().toUpperCase();
+    const status = promoStatus;
     if (!code) {
       status.textContent = "Enter a code to apply.";
       status.className = "promo-status err";
