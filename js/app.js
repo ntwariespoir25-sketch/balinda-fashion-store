@@ -337,6 +337,14 @@
     window.scrollTo({ top: 0, behavior: "smooth" })
   );
 
+  /* ---------- Header elevation ---------- */
+  const header = $(".header");
+  function updateHeader() {
+    header.classList.toggle("scrolled", window.scrollY > 24);
+  }
+  window.addEventListener("scroll", updateHeader, { passive: true });
+  updateHeader();
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();

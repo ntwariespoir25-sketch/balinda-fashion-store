@@ -81,6 +81,8 @@ button { font-family: inherit; cursor: pointer; }
   height: 72px;
 }
 
+.header.scrolled { box-shadow: 0 12px 30px -18px rgba(29, 27, 24, 0.35); border-bottom-color: transparent; }
+
 .logo {
   font-family: var(--font-serif);
   font-size: 1.9rem;
