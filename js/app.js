@@ -269,7 +269,7 @@
       (i) => i.id === product.id && i.size === (size || null)
     );
     if (existing) {
-      existing.qty = Math.min(existing.qty + 1, 10);
+      existing.qty = Math.min(existing.qty + 1, MAX_QTY);
     } else {
       cart.push({ uid: Date.now().toString(36), id: product.id, qty: 1, size: size || null });
     }
@@ -277,10 +277,17 @@
     showToast(`${product.name} added to your bag`);
   }
 
+  const MAX_QTY = 10;
+
   function changeQty(uid, delta) {
     const item = cart.find((i) => i.uid === uid);
     if (!item) return;
-    item.qty += delta;
+    const next = item.qty + delta;
+    if (next > MAX_QTY) {
+      showToast(`Quantity is capped at ${MAX_QTY} per piece`);
+      return;
+    }
+    item.qty = next;
     if (item.qty <= 0) {
       cart = cart.filter((i) => i.uid !== uid);
     }
