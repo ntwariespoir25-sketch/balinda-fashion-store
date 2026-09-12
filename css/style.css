@@ -398,6 +398,25 @@ button { font-family: inherit; cursor: pointer; }
 .product-quick:hover { background: var(--ink); color: #f5f1ea; }
 .product-quick:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
 
+.product-heart {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(251, 250, 247, 0.92);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: all 0.2s;
+}
+.product-heart:hover { transform: scale(1.1); }
+.product-heart.active { background: var(--ink); }
+.product-heart.active svg { fill: var(--danger); stroke: var(--danger); }
+
 .product-swatches { display: flex; gap: 0.35rem; margin-top: 0.4rem; }
 
 .rating { display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--muted); }

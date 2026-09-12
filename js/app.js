@@ -101,6 +101,7 @@
           ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
           ${p.stock === 0 ? `<span class="product-badge badge-out">Sold out</span>` : ""}
           ${p.stock > 0 && p.stock <= 5 ? `<span class="product-badge badge-low">Low stock</span>` : ""}
+          <button class="product-heart ${wishlist.includes(p.id) ? "active" : ""}" data-wish="${p.id}" aria-label="Add to wishlist">${EMPTY_HEART}</button>
           <button class="product-quick" data-add="${p.id}" ${p.stock === 0 ? "disabled" : ""}>${p.stock === 0 ? "Sold Out" : `Add to Bag — ${formatMoney(p.price)}`}</button>
         </div>
         <div class="product-info">
@@ -336,6 +337,12 @@
 
   /* ---------- Cart events ---------- */
   productsGrid.addEventListener("click", (e) => {
+    const wish = e.target.closest("[data-wish]");
+    if (wish) {
+      e.stopPropagation();
+      toggleWishlist(wish.dataset.wish);
+      return;
+    }
     const btn = e.target.closest("[data-add]");
     if (btn) {
       addToCart(btn.dataset.add);
@@ -420,6 +427,40 @@
   document.addEventListener("click", (e) => {
     if (e.target.matches(".cart-empty a, #cartContinue")) closeCart();
   });
+
+  const EMPTY_HEART =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4 8 4c1.6 0 3.1.8 4 2 .9-1.2 2.4-2 4-2 2.8 0 5 2.4 5 5.3 0 3.9-4 7.2-9 11.7z"/></svg>';
+
+  /* ---------- Wishlist ---------- */
+  let wishlist = loadWishlist();
+  function loadWishlist() {
+    try {
+      return JSON.parse(localStorage.getItem("balinda-wishlist")) || [];
+    } catch {
+      return [];
+    }
+  }
+  function saveWishlist() {
+    try {
+      localStorage.setItem("balinda-wishlist", JSON.stringify(wishlist));
+    } catch {
+      /* storage unavailable */
+    }
+  }
+  function toggleWishlist(id) {
+    const product = PRODUCTS.find((p) => p.id === Number(id));
+    if (!product) return;
+    const idx = wishlist.indexOf(Number(id));
+    if (idx > -1) {
+      wishlist.splice(idx, 1);
+      showToast(`${product.name} removed from wishlist`);
+    } else {
+      wishlist.push(Number(id));
+      showToast(`${product.name} added to wishlist ♥`);
+    }
+    saveWishlist();
+    renderProducts();
+  }
 
   /* ---------- Scroll progress ---------- */
   const progressBar = $("#progressBar");
