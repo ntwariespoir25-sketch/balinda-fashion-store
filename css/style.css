@@ -598,6 +598,16 @@ button { font-family: inherit; cursor: pointer; }
 .toast.show { transform: translate(-50%, 0); }
 
 /* ---------- Responsive ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
 @media (max-width: 940px) {
   .category-grid { grid-template-columns: repeat(2, 1fr); }
   .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
