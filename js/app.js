@@ -79,6 +79,16 @@
     return list;
   }
 
+  function stockNote(p) {
+    if (p.stock === 0) {
+      return `<span class="stock-note out-of-stock">Sold out</span>`;
+    }
+    if (p.stock <= 5) {
+      return `<span class="stock-note low-stock">Only ${p.stock} left</span>`;
+    }
+    return `<span class="stock-note in-stock">In stock</span>`;
+  }
+
   function renderProducts() {
     const list = visibleProducts();
     emptyState.hidden = list.length > 0;
@@ -89,11 +99,14 @@
       <article class="product-card" data-id="${p.id}">
         <div class="product-media" style="${productBg(p)}">
           ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
-          <button class="product-quick" data-add="${p.id}">Add to Bag — ${formatMoney(p.price)}</button>
+          ${p.stock === 0 ? `<span class="product-badge badge-out">Sold out</span>` : ""}
+          ${p.stock > 0 && p.stock <= 5 ? `<span class="product-badge badge-low">Low stock</span>` : ""}
+          <button class="product-quick" data-add="${p.id}" ${p.stock === 0 ? "disabled" : ""}>${p.stock === 0 ? "Sold Out" : `Add to Bag — ${formatMoney(p.price)}`}</button>
         </div>
         <div class="product-info">
           <span class="product-cat">${p.category}</span>
           <h3 class="product-name">${p.name}</h3>
+          ${stockNote(p)}
           <div class="product-price-row">
             <span class="product-price ${p.oldPrice ? "sale" : ""}">${formatMoney(p.price)}</span>
             ${p.oldPrice ? `<span class="product-price old">${formatMoney(p.oldPrice)}</span>` : ""}
