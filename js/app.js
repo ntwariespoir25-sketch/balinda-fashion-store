@@ -345,6 +345,23 @@
   window.addEventListener("scroll", updateHeader, { passive: true });
   updateHeader();
 
+  /* ---------- Scroll reveal ---------- */
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+  );
+  function observeReveals() {
+    $$(".reveal:not(.visible)").forEach((el) => revealObserver.observe(el));
+  }
+  observeReveals();
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();
