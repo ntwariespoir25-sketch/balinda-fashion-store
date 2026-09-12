@@ -819,11 +819,20 @@ button { font-family: inherit; cursor: pointer; }
 .to-top:hover { background: var(--accent); }
 
 /* ---------- Toast ---------- */
-.toast {
+.toast-stack {
   position: fixed;
   bottom: 1.6rem;
   left: 50%;
-  transform: translate(-50%, 140%);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: center;
+  z-index: 150;
+  pointer-events: none;
+  width: min(92vw, 420px);
+}
+.toast {
   background: var(--ink);
   color: #f5f1ea;
   padding: 0.85rem 1.6rem;
@@ -831,10 +840,12 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 0.9rem;
   font-weight: 500;
   box-shadow: var(--shadow);
-  z-index: 110;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s, transform 0.3s;
+  text-align: center;
 }
-.toast.show { transform: translate(-50%, 0); }
+.toast.show { opacity: 1; transform: translateY(0); }
 
 /* ---------- Responsive ---------- */
 @media (prefers-reduced-motion: reduce) {

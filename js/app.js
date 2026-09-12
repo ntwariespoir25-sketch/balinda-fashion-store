@@ -27,7 +27,6 @@
   const cartCount = $("#cartCount");
   const cartHeaderCount = $("#cartHeaderCount");
   const wishCount = $("#wishCount");
-  const toast = $("#toast");
 
   /* ---------- Cart persistence ---------- */
   const CART_KEY = "balinda-cart";
@@ -718,12 +717,17 @@
   });
 
   /* ---------- Toast ---------- */
-  let toastTimer;
   function showToast(message) {
-    toast.textContent = message;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    const toastStack = $("#toastStack");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = message;
+    toastStack.appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => {
+      t.classList.remove("show");
+      setTimeout(() => t.remove(), 320);
+    }, 2800);
   }
 
   /* ---------- Helpers: close cart from body link ---------- */
