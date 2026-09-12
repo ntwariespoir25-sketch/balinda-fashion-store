@@ -928,6 +928,12 @@
   tickCountdown();
   setInterval(tickCountdown, 1000);
 
+  /* ---------- Footer year + version ---------- */
+  const yearEl = $("#footerYear");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  const versionEl = $("#siteVersion");
+  if (versionEl) versionEl.textContent = CONFIG.VERSION;
+
   /* ---------- Init ---------- */
   renderProducts();
   updateCartUI();

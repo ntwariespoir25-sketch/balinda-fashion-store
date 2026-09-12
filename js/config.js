@@ -3,6 +3,7 @@
    =================================================================== */
 
 const CONFIG = {
+  VERSION: "1.0.0",
   CURRENCY: { symbol: "$" },
   CART_KEY: "balinda-cart",
   CART_VERSION: 2,

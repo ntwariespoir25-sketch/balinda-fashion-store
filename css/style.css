@@ -616,6 +616,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 .footer-col a:hover { color: var(--accent); }
 
 .footer-bottom { padding-top: 1.8rem; font-size: 0.85rem; color: #6f6a5f; text-align: center; }
+.footer-bottom .version { margin-top: 0.3rem; font-size: 0.72rem; letter-spacing: 0.1em; color: #55503f; }
 
 /* ---------- Cart drawer ---------- */
 .overlay {
