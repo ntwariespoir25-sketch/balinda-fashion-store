@@ -1,0 +1,14 @@
+{
+  "name": "balinda-fashion-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Balinda Fashion Store - Timeless Womenswear",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve .",
+    "build": "echo Build complete"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
